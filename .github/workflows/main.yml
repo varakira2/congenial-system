@@ -1,55 +1,36 @@
-name: run via
+name: tea
 
 on:
   schedule:
-    - cron: "*/5 * * * *"  
+    - cron: "*/15 * * * *" 
   workflow_dispatch:
 
 jobs:
   export-and-run:
     runs-on: ubuntu-latest
-    
-    steps:
-      - name: Check run date
-        id: check_date
-        run: |
-          TARGET_DATE="2025-10-26"
-          CURRENT_DATE=$(date +%Y-%m-%d)
-          echo "Current date is $CURRENT_DATE"
-          echo "Target date to start is $TARGET_DATE"
-          
-          if [[ "$CURRENT_DATE" < "$TARGET_DATE" ]]; then
-            echo "Workflow will not proceed. It is scheduled to start on or after $TARGET_DATE."
-            echo "proceed=false" >> $GITHUB_OUTPUT
-          else
-            echo "Date check passed. Proceeding with workflow."
-            echo "proceed=true" >> $GITHUB_OUTPUT
-          fi
 
-      - name: Checkout
-        if: steps.check_date.outputs.proceed == 'true'
+    steps:
+
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download via
-        if: steps.check_date.outputs.proceed == 'true'
+      - name: Download
         shell: bash
         run: |
-          curl -L -o via.zip "${{ secrets.VIA }}"
-          if [ ! -f "via.zip" ]; then
-            echo "Download failed: via.zip not found."
+          curl -L -o tea.zip "${{ secrets.VIA }}"
+          if [ ! -f "tea.zip" ]; then
+            echo "Download failed: tea.zip not found."
             exit 1
           fi
 
-      - name: Unzip via
-        if: steps.check_date.outputs.proceed == 'true'
+      - name: Unzip
         shell: bash
         run: |
-          unzip via.zip
-          rm via.zip
+          unzip tea.zip
+          rm tea.zip
 
-      - name: Run via.sh
-        if: steps.check_date.outputs.proceed == 'true'
+      - name: Run
         shell: bash
         run: |
-          chmod +x ./via.sh
-          ./via.sh
+          chmod +x ./tea.sh
+          ./tea.sh
